@@ -21,7 +21,6 @@ while next_doc != None:
         print(job.key)
     if all_docs['next'] != None:
         next_doc = get_next_page(all_docs)
-        next_doc = None
     else:
         next_doc = None
 
