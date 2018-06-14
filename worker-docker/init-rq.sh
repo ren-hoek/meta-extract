@@ -2,6 +2,6 @@
 counter=1
 until [ $counter -gt $1 ]
 do
-	docker run --rm -d --network jupyterhub --name "rq$1" alpine/rq-work
+	docker run --init --rm -d --network jupyterhub --name "rq$counter" alpine/rq-work
 	((counter++))
 done

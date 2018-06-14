@@ -140,7 +140,7 @@ def import_page_images(d, p, f):
     return image_list
 
 
-def clean_temp_files(p, f):
+def clean_temp_files(p, f=""):
     """Remove temp files and folders.
 
     Removes the temporary files and folders used in the
@@ -149,11 +149,13 @@ def clean_temp_files(p, f):
         p: Temporary raw file
         f: Folder for temporary images
     """
-    for n in os.listdir(f):
-        os.remove(f + "/" + n)
-    os.rmdir(f)
+    if f != "":
+        for n in os.listdir(f):
+            os.remove(f + "/" + n)
+        os.rmdir(f)
     os.remove(p)
-    os.remove(p + ".pdf")
+    if f != "":
+        os.remove(p + ".pdf")
     return True
 
 
@@ -173,5 +175,22 @@ def insert_aug_metadata(d, a):
     col.insert_one(doc)
 
     clean_temp_files(raw_file.name, temp_dir)
+    return True
+
+
+def insert_doc(d, a):
+    """Insert TIKA extracted metadata and content."""
+    client = py.MongoClient('mongo')
+    db = client['docs']
+    col = db['aug_meta']
+
+    doc, file_stream = get_tika_content(d, a)
+
+    raw_file = create_temp_file(d['latest_version']['download_url'], a)
+    doc['raw_file'] = import_to_gridfs(db, raw_file.name, doc['uuid'])
+
+    col.insert_one(doc)
+
+    clean_temp_files(raw_file.name)
     return True
 
