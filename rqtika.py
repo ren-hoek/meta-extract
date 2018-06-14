@@ -1,26 +1,42 @@
 import os
+import glob
 from rq import Queue
 from redis import Redis
-from docproc import mayan as my
-from docproc.mytika import insert_doc, get_next_page
-from mayan_api_client import API
+from docproc import catalog as ct
+from docproc.mgtika import insert_doc
+import pymongo as py
 
-auth = (os.environ['MAYAN_USER'], os.environ['MAYAN_PASS'])
-mayan = my.MayanAPI()
+def pass_upload_checks(f):
+    """Check file suitable for upload.
 
-next_doc = 1
+    Inputs:
+        f: file path
+    Output:
+        boolean: True if passes all checks
+    """
+    t = not (
+        ct.check_empty_file(f) and
+        ct.check_temporary_file(f) and
+        ct.check_generic_footer(f) and
+        ct.check_file_access_doc(f)
+    )
+    return t
+
 
 redis_conn = Redis(host='redis')
 q = Queue(connection=redis_conn)
 
-while next_doc != None:
-    all_docs = mayan.documents.documents.get(page=next_doc)
-    for doc in all_docs['results']:
-        #insert_doc(doc, auth)
-        job = q.enqueue(insert_doc, doc, auth)
-        print(job.key)
-    if all_docs['next'] != None:
-        next_doc = get_next_page(all_docs)
-    else:
-        next_doc = None
+client = py.MongoClient('mongo')
+db = client['docs']
+col = db['aug_meta']
+file_index = {x['sha1']: True for x in col.find({}, {'_id': 0, 'sha1': 1})}
+
+for file_path in glob.iglob('/home/gavin/Downloads/files/*/*'):
+    file_hash = ct.create_sha(file_path)
+    if file_hash not in file_index:
+            file_index[file_hash] = file_path
+            file_metadata = ct.create_file_metadata(file_path)
+            if pass_upload_checks(file_path):
+                job = q.enqueue(insert_doc, file_path, file_hash)
+                print(job.key)
 
