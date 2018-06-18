@@ -1,5 +1,3 @@
-import os
-import glob
 from rq import Queue
 from redis import Redis
 from docproc.mgtika import insert_pdf_images
@@ -12,7 +10,6 @@ q = Queue(connection=redis_conn)
 client = py.MongoClient('mongo')
 db = client['docs']
 col = db['aug_meta']
-insert_pdf_images
 
 for pdf_id in col.find({"Content-Type.Content": "application/pdf"}, {}):
     job = q.enqueue(insert_pdf_images, pdf_id)

@@ -8,11 +8,24 @@ import gridfs
 import json
 import re
 from tika import unpack
-from pdf2image import convert_from_path
+from pdf2image import convert_from_path, convert_from_bytes
 
 
 def remove_non_ascii(s):
     return "".join(i for i in s if ord(i)<128)
+
+
+def sorted_ls(p):
+    """Order folder list.
+
+    Orders a folder content bu create date.
+    Input:
+        p: Path to folder
+    Output:
+        List of sorted filenames
+    """
+    ctime = lambda f: os.stat(os.path.join(p, f)).st_ctime
+    return list(sorted(os.listdir(p), key=ctime))
 
 
 def create_uuid():
@@ -141,7 +154,7 @@ def import_page_images(d, p, f, o=True):
     else:
         images = create_pdf_images(p, f, True)
 
-    image_list = [import_to_gridfs(d, f + "/" + n, n) for n in os.listdir(f)]
+    image_list = [import_to_gridfs(d, f + "/" + n, n) for n in sorted_ls(f)]
     return image_list
 
 
