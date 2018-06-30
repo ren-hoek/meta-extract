@@ -5,10 +5,10 @@ services:
     hostname: jpymeta 
     container_name: jpymeta
     volumes:
-      - /etc/passwd:/etc/passwd
-      - /etc/shadow:/etc/shadow
-      - /etc/group:/etc/group
-      - /etc/gshadow:/etc/gshadow
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/group:/etc/group:ro
+      - /etc/gshadow:/etc/gshadow:ro
       - /home:/home
     ports:
       - 8888:8888
@@ -20,6 +20,16 @@ services:
     container_name: mongo
     volumes:
       - /home/gavin/Data/mongo:/data/db
+  mongo-express:
+    image: mongo-express
+    hostname: mongo-express
+    container_name: mongo-express
+    depends_on:
+      - mongo
+    links:
+      - mongo:mongo
+    ports:
+      - 8081:8081
   redis:
     image: redis
     hostname: redis
