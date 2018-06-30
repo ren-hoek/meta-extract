@@ -1,0 +1,26 @@
+version: '2'
+services:
+  jpymeta:
+    image: analysis/meta-notebook
+    hostname: jpymeta 
+    container_name: jpymeta
+    volumes:
+      - /etc/passwd:/etc/passwd
+      - /etc/shadow:/etc/shadow
+      - /etc/group:/etc/group
+      - /etc/gshadow:/etc/gshadow
+      - /home:/home
+    ports:
+      - 8888:8888
+    environment:
+      - USER=gavin
+  mongo:
+    image: mongo
+    hostname: mongo
+    container_name: mongo
+    volumes:
+      - /home/gavin/Data/mongo:/data/db
+  redis:
+    image: redis
+    hostname: redis
+    container_name: redis
