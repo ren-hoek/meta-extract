@@ -187,7 +187,7 @@ def create_doc(c, d):
         Boolean success indicator
     """
     try:
-        c.update_one({'_id': i}, {'$set': d}, upsert = u)
+        c.insert_one(d)
         return True
     except:
         return False
