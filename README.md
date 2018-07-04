@@ -51,7 +51,7 @@ docker build -t alpine/rq-tika .
 ```
 
 Then assign *n* workers using the script within the `worker-tika` folder
-``bash
+```bash
 ./init-rq.sh n
 ```
 and stop them using
