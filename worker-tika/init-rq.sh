@@ -3,9 +3,9 @@ counter=1
 until [ $counter -gt $1 ]
 do
 	docker run --init --rm -d \
-		--network metaextract_default \
+		--network meta-extract_default \
 		--name "rq$counter" \
-		-v /home/gavin/Downloads/files:/home/gavin/Downloads/files \
+		-v /data/thread0:/data/thread0 \
 		alpine/rq-tika
 	((counter++))
 done

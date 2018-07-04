@@ -10,16 +10,17 @@ services:
       - /etc/group:/etc/group:ro
       - /etc/gshadow:/etc/gshadow:ro
       - /home:/home
+      - /data:/data
     ports:
       - 8888:8888
     environment:
-      - USER=gavin
+      - USER=$USER
   mongo:
     image: mongo
     hostname: mongo
     container_name: mongo
     volumes:
-      - /home/gavin/Data/mongo:/data/db
+      - /data/mongo:/data/db
   mongo-express:
     image: mongo-express
     hostname: mongo-express
