@@ -2,6 +2,7 @@ version: '2'
 services:
   jpymeta:
     image: analysis/meta-notebook
+    build: ./meta-notebook 
     hostname: jpymeta 
     container_name: jpymeta
     volumes:
