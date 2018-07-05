@@ -10,6 +10,8 @@ services:
       - /etc/shadow:/etc/shadow:ro
       - /etc/group:/etc/group:ro
       - /etc/gshadow:/etc/gshadow:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /usr/bin/docker:/usr/bin/docker:ro
       - /home:/home
       - /data:/data
     ports:
