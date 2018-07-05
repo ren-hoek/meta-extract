@@ -2,23 +2,31 @@
 
 Project to extract data from a variety of common document types. This data includes: the raw file itself, an image of the file, the text from the file, file metadata, and features for machine learning generated from the file. The data is stored in a NoSQL database and the processing is distributed using job queues.
 
-## Test data
-The code as is assumes the test data:
-http://downloads.digitalcorpora.org/corpora/files/govdocs1/threads/thread0.zip
 
-has been downloaded and extracted to:
+## Prerequisites
+
+This project assumes you have `docker` and `docker-compose` installed. `docker-compose` can be installed by following the instructions found here:
+https://docs.docker.com/compose/install/#install-compose
+
+
+## Test data
+The code as is assumes that the example corpus of documents from:
+http://downloads.digitalcorpora.org/corpora/files/govdocs1/threads/thread0.zip
+has been downloaded and extracted to the folder 
 ```bash
 /data/thread0
 ```
+on your system.
+
 
 ## Setting up the dockerised app
-The main parts of the app consist of the following containers:
-* Python environment (including JupyterLab)
-* Redis
-* MongoDB
-* Mongo Express
+The main parts of the app consist of the following four containers:
+* `jpymeta` – Python environment (including JupyterLab) for submitted jobs to the queue and for writing document processing code
+* `redis` – Redis database that contains the queue of processing jobs to be run
+* `mongo` – MongoDb backend to store the documents and any processed outputs
+* `mongo-express` – Mongo Express front end which alls you to view data stored within MongoDB.
 
-To build start the containers (which will build the Python environment image if it doesn't exist and pull down the other images from the internet) run
+To start the containers (which will build the Python environment image if it doesn't exist and pull down the other images from the internet) run
 ```bash
 docker-compose up -d
 ```
@@ -26,14 +34,15 @@ and if the Python environment image needs rebuilding run
 ```bash
 docker-compose up -d --build
 ```
-JupterLab is on port 8888 and the token can be found by typing
+JupterLab is on localhost port 8888 and the token can be found by typing
 ```bash
 docker logs jpymeta
 ```
-and the Mongo databases can be viewed via Mongo Express on port 8081.
+and the Mongo databases can be viewed via Mongo Express on localhost port 8081.
 
-## Example of running a job
-To extract text from text documents using Apache Tika and store the results in MongoDB you can run the following commands from within the `jypymeta` container.
+## Example of submitting and running a processing job
+The following example extracts text from these documents using Apache Tika and stores the outputs in MongoDB. You can run the following commands from within the `jypymeta` container.
+
 First submit the jobs to the queue
 ```bash
 cd meta-extract
@@ -45,7 +54,7 @@ The Redis job queue can be monitored using
 rq info --url http://redis
 ```
 
-Next we need to assign workers. The first time you need to create the worker image by building `alpine/rq-tika` image from the `worker-tika` folder. Run
+Next we need to assign workers to work these jobs. The first time you do this you need to create the worker image by building `alpine/rq-tika` image from the `worker-tika` folder. Run
 ```bash
 docker build -t alpine/rq-tika .
 ```
@@ -54,7 +63,8 @@ Then assign *n* workers using the script within the `worker-tika` folder
 ```bash
 ./init-rq.sh n
 ```
-and stop them using
+and once the documents have all been processed you can stop the containers using
 ```bash
 ./stop-rq.sh n
 ```
+The documents can then be viewed in Mongo Express on local host port 8081.
