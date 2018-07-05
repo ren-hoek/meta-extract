@@ -6,12 +6,15 @@ Project to extract data from a variety of common document types. This data inclu
 ## Prerequisites
 
 This project assumes you have `docker` and `docker-compose` installed. `docker-compose` can be installed by following the instructions found here:
+
 https://docs.docker.com/compose/install/#install-compose
 
 
 ## Test data
 The code as is assumes that the example corpus of documents from:
+
 http://downloads.digitalcorpora.org/corpora/files/govdocs1/threads/thread0.zip
+
 has been downloaded and extracted to the folder 
 ```bash
 /data/thread0
@@ -21,10 +24,10 @@ on your system.
 
 ## Setting up the dockerised app
 The main parts of the app consist of the following four containers:
-* `jpymeta` – Python environment (including JupyterLab) for submitted jobs to the queue and for writing document processing code
+* `jpymeta` – Python environment (including JupyterLab) for submitting jobs to the queue and for writing code to process the documents
 * `redis` – Redis database that contains the queue of processing jobs to be run
-* `mongo` – MongoDb backend to store the documents and any processed outputs
-* `mongo-express` – Mongo Express front end which alls you to view data stored within MongoDB.
+* `mongo` – MongoDB backend to store the documents and any outputs from the processing jobs
+* `mongo-express` – Mongo Express front end which allows you to view the data stored within MongoDB.
 
 To start the containers (which will build the Python environment image if it doesn't exist and pull down the other images from the internet) run
 ```bash
