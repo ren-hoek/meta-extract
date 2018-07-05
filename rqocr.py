@@ -18,4 +18,4 @@ fs = gridfs.GridFS(db)
 for pdf_id in col.find({"Content-Type.Content": "application/pdf"}, {}):
     doc = col.find_one({"_id": pdf_id['_id']})
     for x in doc['page_images']:
-        print(ts.image_to_string(Image.open(fs.get(x)))
+        print(ts.image_to_string(Image.open(fs.get(x))))
