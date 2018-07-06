@@ -57,9 +57,9 @@ The Redis job queue can be monitored using
 rq info --url http://redis
 ```
 
-Next we need to assign workers to work these jobs. The first time you do this you need to create the worker image by building `alpine/rq-tika` image from the `worker-tika` folder. Run
+Next we need to assign workers to work these jobs. The first time you do this you need to create the worker image. Do this by running the following command from within the `worker-tika` folder
 ```bash
-docker build -t alpine/rq-tika .
+./build.sh
 ```
 
 Then assign *n* workers using the script within the `worker-tika` folder
