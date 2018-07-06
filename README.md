@@ -48,7 +48,7 @@ The following example extracts text from these documents using Apache Tika and s
 
 First submit the jobs to the queue
 ```bash
-cd meta-extract
+cd meta-extract/submitters
 python3.5 rqtika.py
 ```
 
@@ -71,3 +71,20 @@ and once the documents have all been processed you can stop the containers using
 ./stop-rq.sh n
 ```
 The documents can then be viewed in Mongo Express on local host port 8081.
+
+## Folder structure
+
+This repo contains the following folders:
+* `docproc` – contains the Python functions used by the workers to process the documents
+* `examples` – contains examples of using the outputs
+* `local-workers` – local (non-dockerised) versions of the workers for testing
+* `meta-notebook` – files to build the Python environment for developing code and submitting jobs
+* `submitters` – code to submit different types of jobs to the queue
+* `worker-*` – files to build a particular type of worker container and programs to build and launch the worker
+
+## Jobs available
+
+The following processing jobs are available:
+* Run Tika and Tesseract on the raw documents and store the ouputs in MongoDB: submitter `rqtika.py` woker container defined in `worker-tika`
+* Convert pdfs stored in MongoDB into jpeg images: submitter `rqimg.py` woker container defined in `worker-tika`
+* Take document stored in MongoDB and standardise the content type: submitter `rqimg.py` woker container defined in `worker-tika`
