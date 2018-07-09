@@ -100,13 +100,34 @@ def get_tika_content(f):
     Calls the rmeta api from TIKA which extracts file metadata
     and content.
     Input:
-        f: file stream
+        f: file object
     Output:
         c: Dictionary of document metadata and content
     """
     try:
         c = remove_key_periods(
             unpack.from_file(f)
+        )
+        c['success'] = 1
+    except:
+        c = dict()
+        c['success'] = 0
+    return c
+
+
+def get_tika_content_stream(f):
+    """Call TIKA api for rmeta content.
+
+    Calls the rmeta api from TIKA which extracts file metadata
+    and content.
+    Input:
+        f: file stream
+    Output:
+        c: Dictionary of document metadata and content
+    """
+    try:
+        c = remove_key_periods(
+            unpack.from_buffer(f)
         )
         c['success'] = 1
     except:
@@ -230,7 +251,7 @@ def stream_to_gridfs(d, f, n):
 
 def insert_attachments(d, f, n):
     """Insert attachment into Mongo."""
-    att = unpack.from_buffer(f)
+    att = get_tika_content_stream(f)
     col = d['aug_meta']
     c = col.insert_one(att)
     b = stream_to_gridfs(d, f, n)
@@ -251,6 +272,7 @@ def insert_doc(f, h):
     doc['raw_file'] = import_to_gridfs(db, f, doc['uuid'])
     if 'attachments' in doc:
         if doc['attachments'] != []:
+            doc['no_attach'] = len(doc['attachments'])
             attachments = doc['attachments']
             doc['attachments'] = [
                 insert_attachments(db, attachments.get(x), x) for x in attachments
@@ -307,18 +329,3 @@ def insert_content_type(d):
 
     return success
 
-def create_attachments(f, h):
-    """Insert TIKA extracted metadata and content and attachments."""
-    client = py.MongoClient('mongo')
-    db = client['docs']
-    col = db['aug_meta']
-
-    doc = get_tika_content(f)
-
-    doc['filepath'] = f
-    doc['sha1'] = h
-    doc['uuid'] = create_uuid()
-    #doc['raw_file'] = import_to_gridfs(db, f, doc['uuid'])
-    #success = create_doc(col, doc)
-
-    return doc

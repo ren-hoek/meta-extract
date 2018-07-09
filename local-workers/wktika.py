@@ -32,7 +32,7 @@ col = db['aug_meta']
 #file_index = {x['sha1']: True for x in col.find({}, {'_id': 0, 'sha1': 1})}
 file_index = {}
 i=0
-for file_path in glob.iglob('/data/thread0/040/040090.ppt'):
+for file_path in glob.iglob('/data/thread0/369/369699.ppt'):
     file_hash = ct.create_sha(file_path)
     if file_hash not in file_index:
         file_index[file_hash] = file_path
