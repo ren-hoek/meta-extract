@@ -18,7 +18,7 @@ def remove_non_ascii(s):
 def sorted_ls(p):
     """Order folder list.
 
-    Orders a folder content bu create date.
+    Orders a folder content by create date.
     Input:
         p: Path to folder
     Output:
@@ -212,6 +212,31 @@ def update_doc(c, i, d, u=False):
         return False
 
 
+def stream_to_gridfs(d, f, n):
+    """Import file into gridFS.
+
+    Import an open file into the gridFS of mongo database d.
+    Inputs:
+        d: Mongo databd to import into
+        f: File stream to import
+        n: Filename for gridFS
+    output:
+        b: objectid of imported file
+    """
+    fs = gridfs.GridFS(d)
+    b = fs.put(f, filename=n)
+    return b
+
+
+def insert_attachments(d, f, n):
+    """Insert attachment into Mongo."""
+    att = unpack.from_buffer(f)
+    col = d['aug_meta']
+    c = col.insert_one(att)
+    b = stream_to_gridfs(d, f, n)
+    return {"metadata": c.inserted_id, "file": b}
+
+
 def insert_doc(f, h):
     """Insert TIKA extracted metadata and content."""
     client = py.MongoClient('mongo')
@@ -224,6 +249,12 @@ def insert_doc(f, h):
     doc['sha1'] = h
     doc['uuid'] = create_uuid()
     doc['raw_file'] = import_to_gridfs(db, f, doc['uuid'])
+    if 'attachments' in doc:
+        if doc['attachments'] != []:
+            attachments = doc['attachments']
+            doc['attachments'] = [
+                insert_attachments(db, attachments.get(x), x) for x in attachments
+            ]
     success = create_doc(col, doc)
 
     return success
@@ -276,3 +307,18 @@ def insert_content_type(d):
 
     return success
 
+def create_attachments(f, h):
+    """Insert TIKA extracted metadata and content and attachments."""
+    client = py.MongoClient('mongo')
+    db = client['docs']
+    col = db['aug_meta']
+
+    doc = get_tika_content(f)
+
+    doc['filepath'] = f
+    doc['sha1'] = h
+    doc['uuid'] = create_uuid()
+    #doc['raw_file'] = import_to_gridfs(db, f, doc['uuid'])
+    #success = create_doc(col, doc)
+
+    return doc
