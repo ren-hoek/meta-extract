@@ -88,3 +88,4 @@ The following processing jobs are available:
 * Run Tika and Tesseract on the raw documents and store the ouputs in MongoDB: submitter `rqtika.py` woker container defined in `worker-tika`
 * Convert pdfs stored in MongoDB into jpeg images: submitter `rqimg.py` woker container defined in `worker-tika`
 * Take document stored in MongoDB and standardise the content type: submitter `rqimg.py` woker container defined in `worker-tika`
+* Take text stored in MongoDB and calculate aggregate word2vec vectors: submitter `rqdoc2vec.py` worker container defined in `worker-text`
