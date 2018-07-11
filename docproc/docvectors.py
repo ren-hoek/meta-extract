@@ -9,50 +9,25 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from gensim.models import KeyedVectors
-from .mgtika import update_doc
 
 
-def get_wordnet_pos(t):
-    """Convert treeback POS tag.
+def update_doc(c, i, d, u=False):
+    """Update document.
 
-    Converts the tressbank pos tag to wordnet to use
-    with the Wordnet lemmatizer
-
-    Input:
-        t: treebank pos tag
-
+    Update a document within a MongoDB collection.
+    Inputs:
+        c: MongoDB collection
+        i: ObjectId of document to update
+        d: Updated document
+        u: Create if document doesn't exist
     Output
-        d: wordnet pos tag
-
+        Boolean success indicator
     """
-    if t.startswith('J'):
-        return wordnet.ADJ
-    elif t.startswith('V'):
-        return wordnet.VERB
-    elif t.startswith('N'):
-        return wordnet.NOUN
-    elif t.startswith('R'):
-        return wordnet.ADV
-    else:
-        return ""
-
-
-def lemmatize(w, p):
-    """Lemmatize word using wordnet.
-
-    Input:
-        w: unlemmatized word
-        p: pos tag
-
-    Output
-        d: lemmatized word
-
-    """
-    if p != "":
-        return WordNetLemmatizer().lemmatize(w, p)
-    else:
-        return WordNetLemmatizer().lemmatize(w, wordnet.NOUN)
-
+    try:
+        c.update_one({'_id': i}, {'$set': d}, upsert = u)
+        return True
+    except:
+        return False
 
 
 def word2vec_preprocess(text):
@@ -94,16 +69,13 @@ def word2vec_preprocess(text):
     text = re.sub(r'9\s*', 'nine ', text)
     
     # Convert the text to lowercase and use nltk tokeniser
-    tokens = pos_tag(word_tokenize(text.lower()))
+    tokens = word_tokenize(text.lower()
     
-    # Lemmatize version and non-lemmatized version
-    tokens = [ (lemmatize(x[0], get_wordnet_pos(x[1])), x[0]) for x in tokens]
-
     # Define a list of stopwords apart from the word 'not'
     stops = set(stopwords.words('english')) - set(('not'))
 
     # Return un-lemmatized version when lemmatized version not in stops
-    return [i[1] for i in tokens if i[0] not in stops]
+    return [i for i in tokens if i not in stops]
 
 
 def normalise(vec):
