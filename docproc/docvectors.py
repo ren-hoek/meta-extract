@@ -69,7 +69,7 @@ def word2vec_preprocess(text):
     text = re.sub(r'9\s*', 'nine ', text)
     
     # Convert the text to lowercase and use nltk tokeniser
-    tokens = word_tokenize(text.lower()
+    tokens = word_tokenize(text.lower())
     
     # Define a list of stopwords apart from the word 'not'
     stops = set(stopwords.words('english')) - set(('not'))
