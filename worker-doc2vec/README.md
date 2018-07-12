@@ -1,6 +1,6 @@
-# Notes on text processing
+# Notes on creating aggregated word2vec document vectors
 
-## Word2vec prerequisites
+## Prerequisites
 This requires that the `nltk` data is stored in `/data/nltk_data`. This can be downloaded using the command:
 ```bash
 sudo python -m nltk.downloader -d /data/nltk_data all
@@ -21,12 +21,3 @@ sudo tar -xvzf GoogleNews-vectors-negative300-SLIM.bin.gz -C /data/GoogleNews-ve
 A discussion on the required preprocessing can be found here:
 
 https://groups.google.com/forum/#!topic/word2vec-toolkit/TI-TQC-b53w
-
-
-## Glove prerequisites
-```bash
-sudo mkdir /data/spacy/
-wget https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-2.0.0/en_core_web_lg-2.0.0.tar.gz
-sudo tar -xvzf en_core_web_lg-2.0.0.tar.gz -C /data/spacy/
-sudo mv en_core_web_lg-2.0.0 en_core_web_lg
-```

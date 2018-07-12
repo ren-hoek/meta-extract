@@ -6,6 +6,6 @@ do
 		--network metaextract_default \
 		--name "rq$counter" \
 		-v /data:/data \
-		alpine/rq-text
+		alpine/rq-doc2vec
 	((counter++))
 done
