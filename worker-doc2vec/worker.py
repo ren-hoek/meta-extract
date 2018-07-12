@@ -1,14 +1,15 @@
 import os
 import nltk
-
-
 from redis import Redis
+import docproc.docvectors as dv
 from rq import Worker, Queue, Connection
-
 
 # Specify location of nltk_data folder
 nltk.data.path.append('/data/nltk_data/')
 
+# Load word2vec model
+model_path = "/data/GoogleNews-vectors-negative300-SLIM.bin"
+dv.model = dv.load_w2v(model_path)
 
 listen = ['high', 'default', 'low']
 

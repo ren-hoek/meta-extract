@@ -143,16 +143,16 @@ def load_w2v(model_path):
     return model
             	
 
-def insert_doc2vec(d, model_path):
+def insert_doc2vec(d):
     """Insert document vectors.
 
     Inserts a document vector created from aggregating word2vec vectors.
     Inputs:
         d: Returned ObjectId dictionary from pymongo find
-	model_path: path to word vector model
     Output:
         Boolean sucess indictor
     """
+
     client = py.MongoClient('mongo')
     db = client['docs']
     col = db['aug_meta']
@@ -161,7 +161,6 @@ def insert_doc2vec(d, model_path):
     doc = col.find_one({"_id": doc_id})
     text = doc['content']
 
-    model = load_w2v(model_path) 
     vec = generate_doc2vec(text, model, 300)
 
     if 'ml-features' not in doc:
