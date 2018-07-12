@@ -11,7 +11,22 @@ Here a cut-down pretrained word2vec model is used from:
 
 https://github.com/eyaler/word2vec-slim
 
-The file `GoogleNews-vectors-negative300-SLIM.bin` needs to be downloaded, uncompressed, and moved to the folder `/data/`. A discussion on the required preprocessing can be found here:
+The file `GoogleNews-vectors-negative300-SLIM.bin` needs to be downloaded, uncompressed, and moved to the folder `/data/`. 
+```bash
+wget https://github.com/eyaler/word2vec-slim/raw/master/GoogleNews-vectors-negative300-SLIM.bin.gz
+sudo tar -xvzf GoogleNews-vectors-negative300-SLIM.bin.gz -C /data/GoogleNews-vectors-negative300-SLIM.bin.gz
+```
+
+
+A discussion on the required preprocessing can be found here:
 
 https://groups.google.com/forum/#!topic/word2vec-toolkit/TI-TQC-b53w
 
+
+## Glove prerequisites
+```bash
+sudo mkdir /data/spacy/
+wget https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-2.0.0/en_core_web_lg-2.0.0.tar.gz
+sudo tar -xvzf en_core_web_lg-2.0.0.tar.gz -C /data/spacy/
+sudo mv en_core_web_lg-2.0.0 en_core_web_lg
+```
