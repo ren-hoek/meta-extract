@@ -5,6 +5,7 @@ RUN pip3 install --no-cache-dir requests pymongo tika mayan_api-client rq pdf2im
 COPY install_tika.py install_tika.py
 RUN ./install_tika.py
 COPY worker.py worker.py
+RUN apk update && apk add --no-cache libreoffice ttf-liberation
 COPY docproc.tar.gz docproc.tar.gz
 RUN tar xvzf docproc.tar.gz
 RUN rm docproc.tar.gz
