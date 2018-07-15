@@ -14,7 +14,7 @@ RUN apt-get update && apt-get -yq dist-upgrade \
     libmagick++-dev libglu1-mesa-dev libffi-dev libgsl-dev \
     libv8-3.14-dev libproj-dev libreoffice poppler-utils \
     python3 python3-dev python3-pip enchant python python-dev python-pip \
-    python3-tk python-tk
+    python3-tk python-tk tesseract-ocr
 RUN apt-get clean
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \

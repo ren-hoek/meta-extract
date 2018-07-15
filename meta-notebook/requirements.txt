@@ -38,4 +38,4 @@ rq
 elasticsearch
 tika
 pdf2image
-
+pytesseract
