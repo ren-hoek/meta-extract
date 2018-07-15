@@ -86,6 +86,10 @@ This repo contains the following folders:
 
 The following processing jobs are available:
 * Run Tika and Tesseract on the raw documents and store the ouputs in MongoDB: submitter `rqtika.py` woker container defined in `worker-tika`
+* Run Tesseract on page images and store the ouputs in MongoDB: submitter `rqocr.py` woker container defined in `worker-tika`
 * Convert pdfs stored in MongoDB into jpeg images: submitter `rqimg.py` woker container defined in `worker-tika`
-* Take document stored in MongoDB and standardise the content type: submitter `rqimg.py` woker container defined in `worker-tika`
+* Convert Word files stored in MongoDB into jpeg images: submitter `rqword.py` woker container defined in `worker-tika`
+* Convert PowerPoint files stored in MongoDB into jpeg images: submitter `rqpp.py` woker container defined in `worker-tika`
+* Convert Excel files stored in MongoDB into jpeg images: submitter `rqexcel.py` woker container defined in `worker-tika`
+* Take document stored in MongoDB and standardise the content type: submitter `rqct.py` woker container defined in `worker-tika`
 * Take text stored in MongoDB and calculate aggregate word2vec vectors: submitter `rqdoc2vec.py` worker container defined in `worker-text`
