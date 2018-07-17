@@ -1,6 +1,6 @@
 from rq import Queue
 from redis import Redis
-import docproc.docvectors as dv
+import docproc.doc2vec as dv
 
 import pymongo as py
 import nltk
