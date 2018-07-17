@@ -30,14 +30,12 @@ def fix_bug(model):
     Input:
         model: spacy model
     Output:
-        True
+        Nothing
     """
 
     for word in model.Defaults.stop_words:
         lex = model.vocab[word]
         lex.is_stop = True
-
-    return True
 
 
 def glove_preprocess(text):
@@ -55,7 +53,7 @@ def glove_preprocess(text):
     processed = []
 
     for word in text: 
-        if word.has_vector and not any([word.is_stop, word.is_digit, word.is_punct])]:
+        if word.has_vector and not any([word.is_stop, word.is_digit, word.is_punct]):
             processed.append(word)
 
     return processed
@@ -87,31 +85,30 @@ def aggregate_glove(words, model):
             document vector
     """
 
-	for i, word in enumerate(words):
+    for i, word in enumerate(words):
     	if i==0:
         	combined = word.vector
     	else:
-        	combined = np.vstack((ar, word.vector))
+        	combined = np.vstack((combined, word.vector))
 
-	docvector = np.mean(combined, axis=0)
+    docvector = np.mean(combined, axis=0)
                
     return docvector
 
 
-def generate_glove(d, model, dim):
+def generate_glove(d, model):
     """Generate document vectors for text from glove vectors.
 
         Inputs:
             d: text extracted from document
-            model: word2vec model
-            dim: number of dimensions of word2vec model
+            model: spacy model
         Output:
             vec: feature vectors
     """
 
-    doc = model(d)
-    cleaned_words = glove_preprocess(doc.lower())
-    vec = aggregate_glove(cleaned_tokens, model)
+    doc = model(d.lower())
+    processed_words = glove_preprocess(doc)
+    vec = aggregate_glove(processed_words, model)
 
     return vec
 
@@ -136,7 +133,7 @@ def insert_glove(d):
     doc = col.find_one({"_id": doc_id})
     text = doc['content']
 
-    vec = generate_glove(text, model, 300)
+    vec = generate_glove(text, model)
 
     if 'ml-features' not in doc:
         doc['ml-features'] = dict()
