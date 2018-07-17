@@ -1,5 +1,6 @@
 import spacy
 import numpy as np
+import pymongo as py
 
 
 def update_doc(c, i, d, u=False):
