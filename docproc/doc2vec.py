@@ -31,7 +31,7 @@ def update_doc(c, i, d, u=False):
 
 
 def word2vec_preprocess(text):
-    ''' Preprocess text for use with word2vec model.
+    """ Preprocess text for use with word2vec model.
     
         Clean the text in the same way as the training data
         used to create the pretrained word2vec model.
@@ -41,7 +41,7 @@ def word2vec_preprocess(text):
         Ouput:
             Cleaned list of tokens
 
-    '''
+    """
     
     # Remove any whitespace at the start and end of the string
     # and remove any stray tabs and newline characters
@@ -79,13 +79,13 @@ def word2vec_preprocess(text):
 
 
 def normalise(vec):
-    '''Normalise a vector.
+    """Normalise a vector.
     
         Input:
             vec: numpy array
         Output:
             Normalised numpy array
-    '''
+    """
     
     norm = np.linalg.norm(vec)
     if norm < 1e-9:
@@ -95,7 +95,7 @@ def normalise(vec):
 
     
 def aggregate_wordvecs(tokens, model, dim):
-    '''Aggregate word vectors into a document vector.
+    """Aggregate word vectors into a document vector.
     
         Simple addition of word vectors to make a document vector
         Inputs:
@@ -103,7 +103,7 @@ def aggregate_wordvecs(tokens, model, dim):
             dim: dimensions of the word vectors
         Output
             Normalised document vector
-    '''
+    """
     vector = np.zeros(dim)
     for word in tokens:
         if word in model:
