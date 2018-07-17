@@ -1,14 +1,5 @@
-import re
-import string
-import unicodedata
+import spacy
 import numpy as np
-import pymongo as py
-from nltk import pos_tag
-from nltk.corpus import wordnet
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-from gensim.models import KeyedVectors
 
 
 def update_doc(c, i, d, u=False):
@@ -30,62 +21,54 @@ def update_doc(c, i, d, u=False):
         return False
 
 
-def word2vec_preprocess(text):
-    ''' Preprocess text for use with word2vec model.
+def fix_bug(model):
+    """Fix spacy model bug.
+
+    Spacy english models (version 2.0) do not correctly set
+    stop words. This should be fixed in future versions.
+
+    Input:
+        model: spacy model
+    Output:
+        True
+    """
+
+    for word in model.Defaults.stop_words:
+        lex = model.vocab[word]
+        lex.is_stop = True
+
+    return True
+
+
+def glove_preprocess(text):
+    """ Preprocess text before aggregation.
     
-        Clean the text in the same way as the training data
-        used to create the pretrained word2vec model.
+        Remove stop words, digits and punctuation.
 
         Inputs:
-            text: string of text from one document
+            text: text object from spacy model
         Ouput:
-            Cleaned list of tokens
+            Cleaned version of input
 
-    '''
+    """
     
-    # Remove any whitespace at the start and end of the string
-    # and remove any stray tabs and newline characters
-    text = text.strip()
-    
-    # Remove any weird unicode characters
-    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode()
-        
-    # Convert hyphens and slashes to spaces
-    text = re.sub(r'[-/]+',' ',text)
-    
-    # Remove remaining punctuation
-    text = re.sub('['+string.punctuation+']', '', text)
-    
-    # Convert numbers to text
-    text = re.sub(r'0\s*', 'zero ', text)
-    text = re.sub(r'1\s*', 'one ', text)
-    text = re.sub(r'2\s*', 'two ', text)
-    text = re.sub(r'3\s*', 'three ', text)
-    text = re.sub(r'4\s*', 'four ', text)
-    text = re.sub(r'5\s*', 'five ', text)
-    text = re.sub(r'6\s*', 'six ', text)
-    text = re.sub(r'7\s*', 'seven ', text)
-    text = re.sub(r'8\s*', 'eight ', text)
-    text = re.sub(r'9\s*', 'nine ', text)
-    
-    # Convert the text to lowercase and use nltk tokeniser
-    tokens = word_tokenize(text.lower())
-    
-    # Define a list of stopwords apart from the word 'not'
-    stops = set(stopwords.words('english')) - set(('not'))
+    processed = []
 
-    # Return un-lemmatized version when lemmatized version not in stops
-    return [i for i in tokens if i not in stops]
+    for word in text: 
+        if word.has_vector and not any([word.is_stop, word.is_digit, word.is_punct])]:
+            processed.append(word)
+
+    return processed
 
 
 def normalise(vec):
-    '''Normalise a vector.
+    """Normalise a vector.
     
         Input:
             vec: numpy array
         Output:
             Normalised numpy array
-    '''
+    """
     
     norm = np.linalg.norm(vec)
     if norm < 1e-9:
@@ -94,26 +77,29 @@ def normalise(vec):
         return vec / norm
 
     
-def aggregate_wordvecs(tokens, model, dim):
-    '''Aggregate word vectors into a document vector.
+def aggregate_glove(words, model):
+    """Aggregate word vectors into a document vector.
     
-        Simple addition of word vectors to make a document vector
+        Simple average of word vectors to make a document vector
         Inputs:
-            tokens: list of cleaned text tokens for a single document
-            dim: dimensions of the word vectors
+            words: list of processed spacy words for a single document
         Output
-            Normalised document vector
-    '''
-    vector = np.zeros(dim)
-    for word in tokens:
-        if word in model:
-            vector += model[word]
+            document vector
+    """
+
+	for i, word in enumerate(words):
+    	if i==0:
+        	combined = word.vector
+    	else:
+        	combined = np.vstack((ar, word.vector))
+
+	docvector = np.mean(combined, axis=0)
                
-    return normalise(vector)
+    return docvector
 
 
-def generate_doc2vec(d, model, dim):
-    """Generate doc2vec vectors for text.
+def generate_glove(d, model, dim):
+    """Generate document vectors for text from glove vectors.
 
         Inputs:
             d: text extracted from document
@@ -123,30 +109,19 @@ def generate_doc2vec(d, model, dim):
             vec: feature vectors
     """
 
-    cleaned_tokens = word2vec_preprocess(d)
-    vec = aggregate_wordvecs(cleaned_tokens, model, dim)
-    vec = normalise(vec)
+    doc = model(d)
+    cleaned_words = glove_preprocess(doc.lower())
+    vec = aggregate_glove(cleaned_tokens, model)
 
     return vec
 
 
-def load_w2v(model_path):
-    """Load pre-trained word2vec model
-
-        Inputs:
-            model_path: file path of the model to load
-        Output:
-            model: word2vec model
-    """
-    model = KeyedVectors.load_word2vec_format(model_path, binary=True)
-
-    return model
-            	
-
-def insert_doc2vec(d):
+def insert_glove(d):
     """Insert document vectors.
 
-    Inserts a document vector created from aggregating word2vec vectors.
+    Inserts a document vector created from averaging glove vectors.
+    Assumes the spacy model has been imported into this module's namspace
+    as "model", to ensure that the model is only loaded once per container.
     Inputs:
         d: Returned ObjectId dictionary from pymongo find
     Output:
@@ -161,11 +136,11 @@ def insert_doc2vec(d):
     doc = col.find_one({"_id": doc_id})
     text = doc['content']
 
-    vec = generate_doc2vec(text, model, 300)
+    vec = generate_glove(text, model, 300)
 
     if 'ml-features' not in doc:
         doc['ml-features'] = dict()
-    doc['ml-features']['doc2vec'] = vec.tolist()
+    doc['ml-features']['glove'] = vec.tolist()
     success = update_doc(col, doc_id, doc)
 
     return success
