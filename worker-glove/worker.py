@@ -1,13 +1,14 @@
 import os
 import spacy
-
-
+import docproc.docglove as dv
 from redis import Redis
 from rq import Worker, Queue, Connection
 
 
-# Specify location of nltk_data folder
-mdoel = spacy.load('/data/spacy/en_vectors_web_lg')
+# Load the spacy model once per container
+model_path = '/data/spacy/en_core_web_lg/en_core_web_lg/en_core_web_lg-2.0.0/'
+dv.model = spacy.load('model_path')
+dv.fix_bug(dv.model)
 
 
 listen = ['high', 'default', 'low']
