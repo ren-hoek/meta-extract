@@ -102,14 +102,14 @@ def aggregate_wordvecs(tokens, model, dim):
             tokens: list of cleaned text tokens for a single document
             dim: dimensions of the word vectors
         Output
-            Normalised document vector
+            document vector
     """
     vector = np.zeros(dim)
     for word in tokens:
         if word in model:
             vector += model[word]
                
-    return normalise(vector)
+    return vector
 
 
 def generate_doc2vec(d, model, dim):
