@@ -76,40 +76,46 @@ def normalise(vec):
         return vec / norm
 
     
-def aggregate_glove(words, model):
+def aggregate_glove(words, model, dim):
     """Aggregate word vectors into a document vector.
     
         Simple average of word vectors to make a document vector
         Inputs:
             words: list of processed spacy words for a single document
+            model: glove model
+            dim: dimensions of spacy model
         Output
             document vector
     """
 
-    for i, word in enumerate(words):
-    	if i==0:
-        	combined = word.vector
-    	else:
-        	combined = np.vstack((combined, word.vector))
+    if len(words) ==0:
+        return np.full((dim,), np.nan)
+    else:
+        for i, word in enumerate(words):
+            if i==0:
+                combined = word.vector
+            else:
+                combined = np.vstack((combined, word.vector))
 
-    docvector = np.mean(combined, axis=0)
+        docvector = np.mean(combined, axis=0)
                
-    return docvector
+        return docvector
 
 
-def generate_glove(d, model):
+def generate_glove(d, model, dim):
     """Generate document vectors for text from glove vectors.
 
         Inputs:
             d: text extracted from document
             model: spacy model
+            dim: dimension of glove model
         Output:
             vec: feature vectors
     """
 
     doc = model(d.lower())
     processed_words = glove_preprocess(doc)
-    vec = aggregate_glove(processed_words, model)
+    vec = aggregate_glove(processed_words, model, dim)
 
     return vec
 
@@ -134,7 +140,7 @@ def insert_glove(d):
     doc = col.find_one({"_id": doc_id})
     text = doc['content']
 
-    vec = generate_glove(text, model)
+    vec = generate_glove(text, modeli, 300)
 
     if 'ml-features' not in doc:
         doc['ml-features'] = dict()
