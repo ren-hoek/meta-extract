@@ -241,3 +241,31 @@ def insert_yolo_tags(d):
 
     return success
 
+
+def insert_yolo_tags_wk(d):
+    """Insert YOLO tags to images.
+
+    Input:
+        x: doc id
+    Output:
+        boolean
+    """
+    client = py.MongoClient('mongo')
+    db = client['docs']
+    col = db['aug_meta']
+
+    temp_dir = tempfile.mkdtemp()
+    doc_id = d['_id']
+    doc = col.find_one({"_id": doc_id})
+    raw_file = get_from_gridfs(db, doc['raw_file'])
+
+    f = tempfile.NamedTemporaryFile(mode='wb', delete=False)
+    f.write(raw_file)
+    tags = identify_yolo_tags(net, meta, f.name)
+    doc['yolo_tags'] = tags
+    success = update_doc(col, doc_id, doc)
+
+    clean_temp_files(temp_dir, f.name)
+
+    return success
+
