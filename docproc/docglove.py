@@ -140,7 +140,7 @@ def insert_glove(d):
     doc = col.find_one({"_id": doc_id})
     text = doc['content']
 
-    vec = generate_glove(text, modeli, 300)
+    vec = generate_glove(text, model, 300)
 
     if 'ml-features' not in doc:
         doc['ml-features'] = dict()
