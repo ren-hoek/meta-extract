@@ -17,3 +17,5 @@ RUN rm docproc.tar.gz
 COPY rqyolo.py /darknet
 COPY worker.py /darknet
 COPY wkyolo.py /darknet
+ENTRYPOINT ["python"]
+CMD ["worker.py"]

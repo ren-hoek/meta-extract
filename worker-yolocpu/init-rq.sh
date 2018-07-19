@@ -6,6 +6,6 @@ do
 		--network metaextract_default \
 		--name "rq$counter" \
 		-v /data/thread0:/data/thread0 \
-		alpine/rq-tika
+		analysis/rq-yolocpu
 	((counter++))
 done

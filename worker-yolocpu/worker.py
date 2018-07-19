@@ -3,8 +3,8 @@ from redis import Redis
 from rq import Worker, Queue, Connection
 import docproc.darknet as dk
 
-dk.net = dk.load_net("cfg/yolov3.cfg", "yolov3.weights", 0)
-dk.meta = dk.load_meta("cfg/coco.data")
+dk.dk_net = dk.load_net("cfg/yolov3.cfg", "yolov3.weights", 0)
+dk.dk_meta = dk.load_meta("cfg/coco.data")
 
 listen = ['high', 'default', 'low']
 
