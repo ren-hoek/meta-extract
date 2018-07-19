@@ -4,7 +4,7 @@
 #
 
 
-IMAGE=analysis/rq-yolo
+IMAGE=analysis/rq-yologpu
 
 # tar the python code
 tar -czvf docproc.tar.gz ../docproc

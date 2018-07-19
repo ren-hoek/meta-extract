@@ -8,10 +8,12 @@ WORKDIR darknet
 COPY Makefile .
 RUN make
 RUN wget https://pjreddie.com/media/files/yolov3.weights
-COPY docproc.tar.gz docproc.tar.gz
-RUN tar xvzf docproc.tar.gz
-RUN rm docproc.tar.gz
 RUN apt-get install -y python-pip
 RUN pip install --no-cache-dir -U pip
 RUN pip install --no-cache-dir -U rq pymongo
+COPY docproc.tar.gz docproc.tar.gz
+RUN tar xvzf docproc.tar.gz
+RUN rm docproc.tar.gz
 COPY rqyolo.py /darknet
+COPY worker.py /darknet
+COPY wkyolo.py /darknet

@@ -208,20 +208,39 @@ def update_doc(c, i, d, u=False):
 
 
 def identify_yolo_tags(n, m, f):
+    """Create YOLO image tag list.
+
+    Detect YOLO tags in image.
+    Inputs:
+        n: Neural network model
+        m: Metadata for model
+        f: Path to image file
+    Output:
+        list of tag dictionaries (tag, prob, box)
+    """
     return [create_tag(x) for x in detect(n, m, f)]
 
 
-def insert_yolo_tags(d):
+def insert_yolo_tags(d, g=False):
     """Insert YOLO tags to images.
 
+    Attach YOLO tags to an image file.
     Input:
-        x: doc id
+        d: ObjectId of document from pymongo find command
+        g: Boolean indicating global model congig
     Output:
-        boolean
+        Boolean success indicator
     """
     client = py.MongoClient('mongo')
     db = client['docs']
     col = db['aug_meta']
+
+    if g == False:
+        net = dk_net
+        meta = dk_meta
+    else:
+        net = load_net("cfg/yolov3.cfg", "yolov3.weights", 0)
+        meta = load_meta("cfg/coco.data")
 
     temp_dir = tempfile.mkdtemp()
     doc_id = d['_id']
