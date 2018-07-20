@@ -1,5 +1,6 @@
 import os
 import io
+import hashlib
 import uuid
 import tempfile
 import requests
@@ -11,6 +12,7 @@ from tika import unpack
 from pdf2image import convert_from_path, convert_from_bytes
 import imgkit
 from pyvirtualdisplay import Display
+from docproc.catalog import create_sha
 
 
 def remove_non_ascii(s):
@@ -42,9 +44,9 @@ def remove_key_periods(d):
     that are in the keys. Mongo won't accept periods in keys
     as thay are special characters.
     Inputs:
-        d: dictionary to step through
+        d: Dictionary to step through
     Outputs:
-        c: cleansed dictionary.
+        c: Cleansed dictionary.
     """
     c = {}
     for k, v in d.items():
@@ -251,13 +253,45 @@ def stream_to_gridfs(d, f, n):
     return b
 
 
+def create_sha_stream(f):
+    """Create SHA1 hash of a file bytestream.
+
+    Inputs:
+        f: file bytestream
+    Outputs:
+        h: SHA1 hash of bytestream
+    """
+    sha = hashlib.sha1()
+    sha.update(f)
+    h = sha.hexdigest()
+    return h
+
+
 def insert_attachments(d, f, n):
-    """Insert attachment into Mongo."""
-    att = get_tika_content_stream(f)
+    """Insert attachment into Mongo.
+
+    Insert attached documents into metadata collection.
+    To extract the metadata the file is passed through Tika.
+    Inputs:
+        d: Mongo database
+        f: Attached file
+        p: Attachment name
+
+    """
     col = d['aug_meta']
+    h = create_sha_stream(f)
+    meta_exists = [x for x in col.find({'sha1': h}, {})]
+
+    if meta_exists:
+        return meta_exists[0]['_id']
+
+    att = get_tika_content_stream(f)
+    att['filepath'] = n
+    att['sha1'] = h
+    att['uuid'] = create_uuid()
+    att['raw_file'] = stream_to_gridfs(d, f, att['uuid'])
     c = col.insert_one(att)
-    b = stream_to_gridfs(d, f, n)
-    return {"metadata": c.inserted_id, "file": b}
+    return c.inserted_id
 
 
 def insert_doc(f, h):
