@@ -1,6 +1,6 @@
 from rq import Queue
 from redis import Redis
-from docproc.docglove import insert_glove
+from docproc.docglove import insert_html_images
 
 import pymongo as py
 
