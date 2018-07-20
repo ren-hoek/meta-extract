@@ -38,4 +38,6 @@ rq
 elasticsearch
 tika
 pdf2image
+pyvirtualdisplay
+imgkit
 
