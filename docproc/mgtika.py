@@ -305,6 +305,29 @@ def insert_pdf_images(d):
     return success
 
 
+def insert_office_images(d):
+    """Insert TIKA extracted metadata and content."""
+    client = py.MongoClient('mongo')
+    db = client['docs']
+    col = db['aug_meta']
+
+    temp_dir = tempfile.mkdtemp()
+
+    doc_id = d['_id']
+    doc = col.find_one({"_id": doc_id})
+    pdf_file = get_from_gridfs(db, doc['raw_file'])
+
+    f = tempfile.NamedTemporaryFile(mode='wb', delete=False)
+    f.write(pdf_file)
+    images = import_page_images(db, f.name, temp_dir, True)
+    doc['page_images'] = images
+    success = update_doc(col, doc_id, doc)
+
+    clean_temp_files(temp_dir, f.name)
+
+    return success
+
+
 def insert_content_type(d):
     """Insert content type.
 

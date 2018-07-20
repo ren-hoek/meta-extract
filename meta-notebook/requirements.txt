@@ -40,4 +40,4 @@ tika
 pdf2image
 pyvirtualdisplay
 imgkit
-
+pytesseract

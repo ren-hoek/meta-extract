@@ -1,7 +1,9 @@
 from rq import Queue
 from redis import Redis
+from docproc.docglove import insert_glove
+
 import pymongo as py
-from docproc.imgocr import insert_document_ocr_text
+
 
 redis_conn = Redis(host='redis')
 q = Queue(connection=redis_conn)
@@ -10,8 +12,8 @@ client = py.MongoClient('mongo')
 db = client['docs']
 col = db['aug_meta']
 
-for pdf_id in col.find({"Content-Type.Content": "application/pdf"}, {}):
-    #print(insert_document_ocr_text(pdf_id))
-    job = q.enqueue(insert_document_ocr_text, pdf_id)
+for doc_id in col.find({"content": {"$exists": True} }, {}):
+    job = q.enqueue(insert_glove, doc_id)
     print(job.key)
+
 
