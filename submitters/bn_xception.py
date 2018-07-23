@@ -13,6 +13,6 @@ client = py.MongoClient('mongo')
 db = client['docs']
 col = db['aug_meta']
 
-for doc_id in col.find({"Content-Type.Content": "application/jpeg"}, {}):
+for doc_id in col.find({"metadata.Content-Type": "image/jpeg"}, {}):
     job = q.enqueue(bn.insert_xception, doc_id)
     print(job.key)

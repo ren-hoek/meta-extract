@@ -36,7 +36,7 @@ def get_from_gridfs(d, f):
         b: bytestream of file
     """
     fs = gridfs.GridFS(d)
-    b = fs.get(f).read()
+    b = fs.get(f)#.read()
     return b
 
 def read_img(img_id, size):
