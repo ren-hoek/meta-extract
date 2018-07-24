@@ -2,7 +2,7 @@ import numpy as np
 from keras.preprocessing import image
 from keras.applications import inception_v3, xception, vgg16, resnet50
 import h5py as h5py
-#from tqdm import tqdm
+import gridfs
 import pymongo as py
 
 
