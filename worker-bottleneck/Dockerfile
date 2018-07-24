@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
  && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install -U --no-cache-dir pip
-RUN pip3 install --no-cache-dir requests pymongo rq numpy scipy keras h5py tensorflow tqdm
+RUN pip3 install --no-cache-dir requests pymongo rq numpy scipy keras h5py tensorflow tqdm pillow
 COPY worker.py worker.py
 COPY docproc.tar.gz docproc.tar.gz
 RUN tar xvzf docproc.tar.gz
