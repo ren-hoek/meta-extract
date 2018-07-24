@@ -6,6 +6,6 @@ do
 		--network metaextract_default \
 		--name "rq$counter" \
 		-v /data/:/data/ \
-		alpine/rq-bottleneck
+		ubuntu/rq-bottleneck
 	((counter++))
 done

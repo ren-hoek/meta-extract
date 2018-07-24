@@ -4,7 +4,7 @@
 #
 
 
-IMAGE=alpine/rq-bottleneck
+IMAGE=ubuntu/rq-bottleneck
 
 # tar the python code
 tar -czvf docproc.tar.gz ../docproc
