@@ -1,6 +1,6 @@
 from rq import Queue
 from redis import Redis
-from docproc.mgtika import insert_html_images
+from docproc.htmlimage import insert_html_images
 
 import pymongo as py
 

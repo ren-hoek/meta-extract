@@ -10,9 +10,7 @@ import json
 import re
 from tika import unpack
 from pdf2image import convert_from_path, convert_from_bytes
-import imgkit
-from pyvirtualdisplay import Display
-from docproc.catalog import create_sha
+
 
 
 def remove_non_ascii(s):
@@ -388,34 +386,4 @@ def insert_content_type(d):
 
     return success
 
-def insert_html_images(d):
-    """Inserts an image into page images for html content types
-    
-    input 
-        d: ObjectId from pymongo
-    
-    output
-        Boolean sucess indicator
-    """
-    client = py.MongoClient('mongo')
-    db = client['docs']
-    col = db['aug_meta']
-    doc_id = d['_id']
-    doc = col.find_one({"_id": doc_id})
-    html_file = get_from_gridfs(db, doc['raw_file'])
-    f = tempfile.NamedTemporaryFile(mode='wb', delete=False, suffix='.html')
-    f.write(html_file)
-    f.flush()
-    display = Display(visible=0, size=(800,600))
-    display.start()
-    jpgfile = imgkit.from_file(f.name, 'pageimg.jpg')
-  #  display.stop()
-    f.delete
-    b = import_to_gridfs(db, 'pageimg.jpg', 'image')
-    if 'page_images' not in doc:
-        doc['page_images']=[]
-    doc['page_images'].append(b)
 
-    success = update_doc(col, doc_id, doc)
-    
-    return success

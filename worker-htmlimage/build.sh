@@ -4,7 +4,7 @@
 #
 
 
-IMAGE=alpine/rq-htmlimage
+IMAGE=ubuntu/rq-htmlimage
 
 # tar the python code
 tar -czvf docproc.tar.gz ../docproc
