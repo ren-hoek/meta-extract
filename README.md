@@ -91,6 +91,7 @@ The following processing jobs are available:
 * Convert Word files stored in MongoDB into jpeg images: submitter `rqword.py` woker container defined in `worker-tika`
 * Convert PowerPoint files stored in MongoDB into jpeg images: submitter `rqpp.py` woker container defined in `worker-tika`
 * Convert Excel files stored in MongoDB into jpeg images: submitter `rqexcel.py` woker container defined in `worker-tika`
+* Convert html files stored in MongoDB into jpeg images: submitter `rqhtmlimage.py` woker container defined in `worker-htmlimage`
 * Take document stored in MongoDB and standardise the content type: submitter `rqct.py` woker container defined in `worker-tika`
 * Take text stored in MongoDB and calculate aggregate word2vec vectors: submitter `rqdoc2vec.py` worker container defined in `worker-doc2vec`
 * Take text stored in MongoDB and calculate aggregate glove vectors: submitter `rqglove.py` worker container defined in `worker-glove`
